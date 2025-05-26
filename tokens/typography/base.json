@@ -1,0 +1,98 @@
+{
+  "$type": "typography",
+
+  "fontFamily": {
+    "base": {
+      "$type": "fontFamily",
+      "$value": "Overpass, Arial, sans-serif"
+    },
+    "heading": {
+      "$type": "fontFamily",
+      "$value": "Overpass, Arial, sans-serif"
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": "Fira Code, Courier New, monospace"
+    }
+  },
+
+  "fontSize": {
+    "xs": { 
+      "$type": "dimension",
+      "$value": "12px" 
+    },
+    "sm": { 
+      "$type": "dimension",
+      "$value": "14px" 
+    },
+    "base": { 
+      "$type": "dimension",
+      "$value": "16px" 
+    },
+    "lg": { 
+      "$type": "dimension",
+      "$value": "18px" 
+    },
+    "xl": { 
+      "$type": "dimension",
+      "$value": "20px" 
+    },
+    "2xl": { 
+      "$type": "dimension",
+      "$value": "24px" 
+    },
+    "3xl": { 
+      "$type": "dimension",
+      "$value": "30px" 
+    }
+  },
+
+  "fontWeight": {
+    "normal": { 
+      "$type": "fontWeight",
+      "$value": "400" 
+    },
+    "medium": { 
+      "$type": "fontWeight",
+      "$value": "500" 
+    },
+    "semibold": { 
+      "$type": "fontWeight",
+      "$value": "700" 
+    },
+    "bold": { 
+      "$type": "fontWeight",
+      "$value": "900" 
+    }
+  },
+
+  "lineHeight": {
+    "normal": { 
+      "$type": "dimension",
+      "$value": "1.25" 
+    },
+    "heading": { 
+      "$type": "dimension",
+      "$value": "1.1" 
+    },
+    "tight": { 
+      "$type": "dimension",
+      "$value": "1" 
+    }
+  },
+
+  "letterSpacing": {
+    "normal": { 
+      "$type": "dimension",
+      "$value": "0em" 
+    },
+    "narrow": { 
+      "$type": "dimension",
+      "$value": "-0.5px" 
+    },
+    "wide": { 
+      "$type": "dimension",
+      "$value": "0.5px" 
+    }
+  }
+}

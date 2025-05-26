@@ -1,0 +1,20 @@
+{
+  "name": "degen",
+  "version": "0.0.1",
+  "description": "A GitOps powered design system generator for Humans and AI-powered code generation.",
+  "author": "Dessert",
+  "license": "Business Source License",
+  "private": false,
+  "type": "module",
+  "dependencies": {
+    "glob": "^11.0.2",
+    "sd-tailwindcss-transformer": "^2.1.0",
+    "style-dictionary": "^5.0.0",
+    "tinycolor2": "^1.6.0"
+  },
+  "scripts": {
+    "generate": "pnpm generate:tailwind && pnpm generate:figma",
+    "generate:tailwind": "node ./generators/tailwind/tailwindGenerator.js",
+    "generate:figma": "node ./generators/figma/figmaGenerator.js"
+  }
+}
