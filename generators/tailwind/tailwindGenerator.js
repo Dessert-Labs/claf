@@ -199,7 +199,9 @@ StyleDictionary.registerFormat({
     const partialConfig = {
       darkMode: "class",
       theme: {
-        extend: {},
+        extend: {
+          colors: {}
+        },
       },
     };
 
@@ -215,8 +217,16 @@ StyleDictionary.registerFormat({
         cssRef = `var(--${camelToKebab(token.name)})`;
       }
 
+      // Flatten nested color objects
       const segments = token.name.split("-");
-      setNestedProperty(partialConfig.theme.extend, segments, cssRef);
+      if (segments[0] === "colors") {
+        // For colors, create flattened keys like "button-primary-bg"
+        const flattenedKey = segments.slice(1).join("-");
+        partialConfig.theme.extend.colors[flattenedKey] = cssRef;
+      } else {
+        // For non-colors, keep the nested structure
+        setNestedProperty(partialConfig.theme.extend, segments, cssRef);
+      }
     });
 
     const partialStr = jsify(partialConfig, 2);
