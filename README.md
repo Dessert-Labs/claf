@@ -1,12 +1,12 @@
-# Degen - GitOps powered Design System Generator 🚀
+# Clafoutis - GitOps powered Design System Generator 🚀
 
-Degen is a powerful, automated design system generator that transforms your design tokens into production-ready code across multiple platforms. 
+Clafoutis is a powerful, automated design system generator that transforms your design tokens into production-ready code across multiple platforms.
 
-Built on the [Design Tokens Community Group (DTCG) specification](https://tr.designtokens.org/), Degen ensures your design system remains vendor-agnostic while maintaining industry standards.
+Built on the [Design Tokens Community Group (DTCG) specification](https://tr.designtokens.org/), Clafoutis ensures your design system remains vendor-agnostic while maintaining industry standards.
 
-## Why Degen? 🤔
+## Why Clafoutis? 🤔
 
-In today's AI-powered development environment, maintaining brand consistency between design and code at scale is crucial. Degen bridges this gap by:
+In today's AI-powered development environment, maintaining brand consistency between design and code at scale is crucial. Clafoutis bridges this gap by:
 
 - **GitOps-First Approach**: Treat your design tokens like infrastructure code - version controlled, reviewable, and deployable
 - **Industry Standard Compliant**: Built on the DTCG specification, ensuring your tokens are future-proof and portable
@@ -18,19 +18,19 @@ In today's AI-powered development environment, maintaining brand consistency bet
 - **Single Source of Truth**: Define your design tokens once, deploy everywhere
 - **GitOps Integration**: Version control your design system alongside your codebase
 - **Realtime Generation**: Transform tokens into platform-specific formats automatically
-- **Recommended Starting Design Tokens**: We will be building a 'recommended' design token schema, allowing developers and designers to build their own design system from Day 1. See /tokens/*.
+- **Recommended Starting Design Tokens**: We will be building a 'recommended' design token schema, allowing developers and designers to build their own design system from Day 1. See /tokens/\*.
 
 ## Supported Platforms 🎯
 
 ### Design Tools
 
 - **Figma**: Generate variables and styles directly in your Figma files
-  - [Documentation](https://github.com/Dessert-Labs/degen/blob/main/docs/figma/README.md)
+  - [Documentation](https://github.com/Dessert-Labs/claf/blob/main/docs/figma/README.md)
 
 ### Development Frameworks
 
 - **React/Tailwind**: Generate Tailwind configuration and React components
-  - [Documentation](https://github.com/Dessert-Labs/degen/blob/main/docs/tailwind/README.md)
+  - [Documentation](https://github.com/Dessert-Labs/claf/blob/main/docs/tailwind/README.md)
 
 ## Getting Started 🚀
 
@@ -48,7 +48,7 @@ GitOps has revolutionized how we manage infrastructure. We're bringing the same 
 
 ## Contributing 🤝
 
-We welcome contributions! Whether it's adding support for new platforms, improving documentation, or fixing bugs, your help makes Degen better for everyone
+We welcome contributions! Whether it's adding support for new platforms, improving documentation, or fixing bugs, your help makes Clafoutis better for everyone
 
 ---
 

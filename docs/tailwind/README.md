@@ -1,36 +1,36 @@
-# Installing Degen Design System
+# Installing Clafoutis Design System
 
-This README provides instructions for integrating the **Degen Design System** with **Tailwind CSS** in your project. The system outputs ready-to-use CSS files (for base and dark modes) plus **two** important Tailwind JS config files (`tailwind.base.js` and `tailwind.config.js`), ensuring consistent theming with minimal setup.
+This README provides instructions for integrating the **Clafoutis Design System** with **Tailwind CSS** in your project. The system outputs ready-to-use CSS files (for base and dark modes) plus **two** important Tailwind JS config files (`tailwind.base.js` and `tailwind.config.js`), ensuring consistent theming with minimal setup.
 
 ---
 
 ## 1. Obtain the Generated Artifacts
 
-The Degen Design System repository uses **Style Dictionary** to produce **five** key outputs:
+The Clafoutis Design System repository uses **Style Dictionary** to produce **five** key outputs:
 
-1. [**`base.css`**](https://github.com/Dessert-Labs/degen/blob/main/build/tailwind/base.css) – Contains global (light/base) CSS variables.
-2. [**`dark.css`**](https://github.com/Dessert-Labs/degen/blob/main/build/tailwind/dark.css) – Contains dark-mode CSS variables (using a `.dark` selector).
-3. [**`index.css`**](https://github.com/Dessert-Labs/degen/blob/main/build/tailwind/index.css) – Imports `base.css` and `dark.css` plus the Tailwind layers.
-4. [**`tailwind.base.js`**](https://github.com/Dessert-Labs/degen/blob/main/build/tailwind/tailwind.base.js) – A **partial** Tailwind config automatically derived from tokens.
-5. [**`tailwind.config.js`**](https://github.com/Dessert-Labs/degen/blob/main/build/tailwind/tailwind.config.js) – A **merged** config that imports `tailwind.base.js` and extends/overrides it (e.g., adding `content`, custom plugins, or brand overrides).
+1. [**`base.css`**](https://github.com/Dessert-Labs/claf/blob/main/build/tailwind/base.css) – Contains global (light/base) CSS variables.
+2. [**`dark.css`**](https://github.com/Dessert-Labs/claf/blob/main/build/tailwind/dark.css) – Contains dark-mode CSS variables (using a `.dark` selector).
+3. [**`index.css`**](https://github.com/Dessert-Labs/claf/blob/main/build/tailwind/index.css) – Imports `base.css` and `dark.css` plus the Tailwind layers.
+4. [**`tailwind.base.js`**](https://github.com/Dessert-Labs/claf/blob/main/build/tailwind/tailwind.base.js) – A **partial** Tailwind config automatically derived from tokens.
+5. [**`tailwind.config.js`**](https://github.com/Dessert-Labs/claf/blob/main/build/tailwind/tailwind.config.js) – A **merged** config that imports `tailwind.base.js` and extends/overrides it (e.g., adding `content`, custom plugins, or brand overrides).
 
-You can **copy** these files from the Degen Design System repo into your own project (e.g., place them in your root or `src/` folder) or pull them in via a package dependency. The **`base.css`, `dark.css`, `index.css`** files reside under **`build/tailwind/`** while **`tailwind.base.js`** and **`tailwind.config.js`** appear at the **root** of the repo.
+You can **copy** these files from the Clafoutis Design System repo into your own project (e.g., place them in your root or `src/` folder) or pull them in via a package dependency. The **`base.css`, `dark.css`, `index.css`** files reside under **`build/tailwind/`** while **`tailwind.base.js`** and **`tailwind.config.js`** appear at the **root** of the repo.
 
 ---
 
 ## 2. Place or Reference the Files in Your Tailwind Setup
 
-1. [**`index.css`**](https://github.com/Dessert-Labs/degen/blob/main/build/tailwind/index.css)
+1. [**`index.css`**](https://github.com/Dessert-Labs/claf/blob/main/build/tailwind/index.css)
 
    - This CSS file already imports `base.css` and `dark.css`, then includes `@tailwind base; @tailwind components; @tailwind utilities;`.
    - Copy `index.css` into your project (e.g. `src/index.css`) or wherever your main stylesheet resides.
 
-2. [**`tailwind.base.js`**](https://github.com/Dessert-Labs/degen/blob/main/build/tailwind/tailwind.base.js)
+2. [**`tailwind.base.js`**](https://github.com/Dessert-Labs/claf/blob/main/build/tailwind/tailwind.base.js)
 
    - This file is a **partial** Tailwind config containing **tokens** (colors, spacing, etc.) under `theme.extend`.
    - You typically **don’t** run Tailwind using only `tailwind.base.js`—it’s a building block for the final `tailwind.config.js`.
 
-3. [**`tailwind.config.js`**](https://github.com/Dessert-Labs/degen/blob/main/build/tailwind/tailwind.config.js)
+3. [**`tailwind.config.js`**](https://github.com/Dessert-Labs/claf/blob/main/build/tailwind/tailwind.config.js)
    - The main Tailwind configuration that **imports** `tailwind.base.js` and merges it with additional settings (like the `content` array, plugins, or custom color overrides).
    - Use **this** file as your **primary** config in your build commands (e.g. `npx tailwindcss -c tailwind.config.js ...`).
 
@@ -51,7 +51,7 @@ my-project/
 
 ---
 
-## 3. Install Degen Design System
+## 3. Install Clafoutis Design System
 
 Ensure you have Tailwind CSS installed in your project. If not, you can install it using the following commands:
 
@@ -60,7 +60,7 @@ npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init
 ```
 
-_Replace the one generated by the above command with the `tailwind.config.js` file from the **Degen Design System** repository._
+_Replace the one generated by the above command with the `tailwind.config.js` file from the **Clafoutis Design System** repository._
 
 Manually copy `index.css` and `tailwind.config.js` to your repository, you may automatically update these or choose to manually update them.
 
@@ -72,24 +72,24 @@ You can simply curl them into your project during build, an example is provided 
 
 ```json
     "build": "yarn download:styles && tsc && vite build",
-    "download:styles": "curl -L 'https://raw.githubusercontent.com/Dessert-Labs/degen/main/build/tailwind/base.css' -o 'src/styles/css/base.css' && curl -L 'https://raw.githubusercontent.com/Dessert-Labs/degen/main/build/tailwind/dark.css' -o 'src/styles/css/dark.css' && curl -L 'https://raw.githubusercontent.com/Dessert-Labs/degen/main/build/tailwind/tailwind.base.js' -o 'tailwind.base.js'"
+    "download:styles": "curl -L 'https://raw.githubusercontent.com/Dessert-Labs/claf/main/build/tailwind/base.css' -o 'src/styles/css/base.css' && curl -L 'https://raw.githubusercontent.com/Dessert-Labs/Clafoutis/main/build/tailwind/dark.css' -o 'src/styles/css/dark.css' && curl -L 'https://raw.githubusercontent.com/Dessert-Labs/Clafoutis/main/build/tailwind/tailwind.base.js' -o 'tailwind.base.js'"
 ```
 
 ---
 
-## 4. Configure Your Project to Use the Degen Design System
+## 4. Configure Your Project to Use the Clafoutis Design System
 
 To integrate the design system:
 
 1. Ensure `index.css` is included in your main entry file (e.g., `src/index.css` or equivalent).
-2. Use the `tailwind.config.js` file provided by Degen to replace your default Tailwind configuration.
+2. Use the `tailwind.config.js` file provided by Clafoutis to replace your default Tailwind configuration.
 3. Make sure your project’s build tool (e.g., Vite, Webpack, or Parcel) is correctly processing Tailwind CSS and PostCSS.
 
 ---
 
 ## 5. Add Dark Mode Support (Optional)
 
-The Degen Design System uses the `class` strategy for dark mode. To enable it in your project:
+The Clafoutis Design System uses the `class` strategy for dark mode. To enable it in your project:
 
 1. Add the `dark` class to your `html` or `body` tag to toggle dark mode.
 2. Example:
@@ -135,7 +135,7 @@ export default {
 };
 ```
 
-This ensures that you maintain the Degen Design System's tokens while adding your own customizations.
+This ensures that you maintain the Clafoutis Design System's tokens while adding your own customizations.
 
 ---
 
@@ -168,11 +168,11 @@ Check your components to ensure that styles and tokens are being applied as expe
 ## 8. Additional Resources
 
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Degen Design System GitHub Repository](https://github.com/Dessert-Labs/degen/blob/main/README.md)
+- [claf Design System GitHub Repository](https://github.com/Dessert-Labs/claf/blob/main/README.md)
 - [Style Dictionary Documentation](https://amzn.github.io/style-dictionary/)
 
-For further assistance, refer to the documentation or reach out to the Degen team.
+For further assistance, refer to the documentation or reach out to the Clafoutis team.
 
 ---
 
-By following these steps, your project will be set up with the Degen Design System and fully integrated with Tailwind CSS for consistent and customizable theming.
+By following these steps, your project will be set up with the Clafoutis Design System and fully integrated with Tailwind CSS for consistent and customizable theming.
