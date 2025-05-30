@@ -28,35 +28,84 @@ function cleanDist() {
 
 // 1) TRANSFORMERS
 // ----------------------------------------------------------------------------
-//A custom formatter to allow valid css vars (0 0 0) for tailwind opacity classes
-//e.g bg-[rgb(var(--colors-background-inverse))]/80
+/**
+ * Transforms color values to space-separated RGB values
+ * e.g. "#FF0000" -> "255 0 0"
+ */
 StyleDictionary.registerTransform({
   name: "color/spaceRGB",
   type: "value",
-  matcher: (token) => token.$type === "color",
+  filter: (token) => token.$type === "color",
   transform: (token) => {
     const { r, g, b } = tinycolor(token.$value).toRgb();
-    // Return space-separated "r g b", e.g. "255 0 0"
     return `${r} ${g} ${b}`;
   },
 });
-//A custom formatter to allow kebab-case names preserving camelCases i.e text-fontSize-sm
-/*
-It allows us to output valid tailwind classes like:
-fontFamily: {
-  base: "var(--typography-fontFamily-base)"
-}
-*/
+
+/**
+ * Transforms token paths to kebab-case while preserving camelCase
+ * e.g. ["text", "fontSize", "sm"] -> "text-fontSize-sm"
+ */
 StyleDictionary.registerTransform({
   name: "name/kebabWithCamel",
   type: "name",
   transform: (token) => token.path.join("-"),
 });
 
-//We use this in our tailwind config to convert camelCase to kebab-case for css vars only
+/**
+ * Converts camelCase to kebab-case
+ * e.g. "fontSize" -> "font-size"
+ */
 function camelToKebab(str) {
   return str.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 }
+
+/**
+ * Transforms a dimension value or space-separated list of dimensions to pixel values
+ * @param {string|number} value - The dimension value(s) to transform
+ * @returns {string} Space-separated list of pixel values
+ */
+function formatPixels(value) {
+  return parseSpaceSeparatedValues(value)
+    .map(convertToPixels)
+    .join(" ");
+}
+
+/**
+ * Converts a single value to a pixel value
+ * @param {string|number} value - The value to convert
+ * @returns {string} The value with 'px' suffix if numeric
+ */
+function convertToPixels(value) {
+  const num = parseFloat(value);
+  if (isNaN(num)) return String(value);
+  if (num === 0) return "0px";
+  return `${num}px`;
+}
+
+/**
+ * Parses a value into an array of space-separated values
+ * @param {string|number} value - The value to parse
+ * @returns {string[]} Array of individual values
+ */
+function parseSpaceSeparatedValues(value) {
+  if (typeof value === "string" && value.includes(" ")) {
+    return value.split(" ").filter(Boolean);
+  }
+  return [String(value)];
+}
+
+// Register the dimension transform
+StyleDictionary.registerTransform({
+  name: "dimension/px",
+  type: "value",
+  filter: (token) => token.original.$type === "dimension",
+  transform: (token) => {
+    const value = token.original.$value;
+    if (value === undefined) return undefined;
+    return formatPixels(value);
+  },
+});
 
 // Some built-in transforms
 const defaultTransforms = [
@@ -81,11 +130,15 @@ StyleDictionary.registerTransformGroup({
     "size/px",
     "name/kebab",
     "shadow/css/shorthand",
+    "dimension/px",
   ],
 });
 
 // 2) FILE HEADERS
 // ----------------------------------------------------------------------------
+/**
+ * Generates a warning header for auto-generated files
+ */
 StyleDictionary.registerFileHeader({
   name: "doNotEditWarningHeader",
   fileHeader: async () => {
@@ -94,6 +147,9 @@ StyleDictionary.registerFileHeader({
   },
 });
 
+/**
+ * Generates a header for editable auto-generated files
+ */
 StyleDictionary.registerFileHeader({
   name: "canEditHeader",
   fileHeader: async () => {
@@ -107,18 +163,29 @@ StyleDictionary.registerFileHeader({
 
 // 3) A HELPER TO PRODUCE JS CODE WITH UNQUOTED KEYS
 // ----------------------------------------------------------------------------
+/**
+ * Validates if a string is a valid JavaScript object key
+ * @param {string} key - The key to validate
+ * @returns {boolean} Whether the key is valid
+ */
 function isValidJSKey(key) {
   // Basic check for a valid JS identifier: a-z, A-Z, 0-9, _, $
   // cannot start with digit
   return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key);
 }
 
-function jsify(value, indent = 2) {
+/**
+ * Converts a value to a JavaScript literal representation
+ * @param {any} value - The value to convert
+ * @param {number} indent - The current indentation level
+ * @returns {string} JavaScript literal representation
+ */
+function toJSLiteral(value, indent = 2) {
   if (typeof value === "string") {
     return `"${value}"`;
   }
   if (Array.isArray(value)) {
-    const arrContent = value.map((v) => jsify(v, indent + 2)).join(", ");
+    const arrContent = value.map((v) => toJSLiteral(v, indent + 2)).join(", ");
     return `[${arrContent}]`;
   }
   if (typeof value === "object" && value !== null) {
@@ -127,7 +194,7 @@ function jsify(value, indent = 2) {
     const entries = Object.entries(value);
     entries.forEach(([k, v], index) => {
       let keyName = isValidJSKey(k) ? k : `"${k}"`;
-      result += `${spaces}${keyName}: ${jsify(v, indent + 2)}`;
+      result += `${spaces}${keyName}: ${toJSLiteral(v, indent + 2)}`;
       if (index < entries.length - 1) {
         result += ",";
       }
@@ -136,9 +203,15 @@ function jsify(value, indent = 2) {
     result += " ".repeat(indent - 2) + "}";
     return result;
   }
-  return String(value); // booleans, numbers, etc.
+  return String(value); // catch-all for booleans, numbers, etc.
 }
 
+/**
+ * Sets a nested property in an object using an array of keys
+ * @param {Object} obj - The target object
+ * @param {string[]} pathArray - Array of keys representing the path
+ * @param {any} value - The value to set
+ */
 function setNestedProperty(obj, pathArray, value) {
   let current = obj;
   for (let i = 0; i < pathArray.length; i++) {
@@ -166,7 +239,6 @@ function setNestedProperty(obj, pathArray, value) {
  */
 StyleDictionary.registerFormat({
   name: "css/index-file",
-  // property is "format" not "formatter", but we can do async to use await
   format: async function ({ file, options, dictionary }) {
     const header = await fileHeader({ file, options });
 
@@ -194,13 +266,12 @@ StyleDictionary.registerFormat({
   name: "tailwind/base",
   format: async function ({ file, options, dictionary }) {
     const header = await fileHeader({ file, options });
-    const dateTime = new Date().toLocaleString();
 
     const partialConfig = {
       darkMode: "class",
       theme: {
         extend: {
-          colors: {}
+          colors: {},
         },
       },
     };
@@ -229,7 +300,7 @@ StyleDictionary.registerFormat({
       }
     });
 
-    const partialStr = jsify(partialConfig, 2);
+    const partialStr = toJSLiteral(partialConfig, 2);
     const snippet = `/** @type {import('tailwindcss').Config} */
 export default ${partialStr};
 `;
@@ -247,7 +318,6 @@ StyleDictionary.registerFormat({
   name: "tailwind/config",
   format: async function ({ file, options, dictionary }) {
     const header = await fileHeader({ file, options });
-    const dateTime = new Date().toLocaleString();
 
     // We'll build a snippet that merges the base partial config
     const snippet = `/** @type {import('tailwindcss').Config} */
