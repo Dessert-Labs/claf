@@ -10,16 +10,17 @@ import {
   logVerbosityLevels,
   logWarningLevels,
 } from "style-dictionary/enums";
+import type { DesignToken } from "style-dictionary/types";
 
 // 0) CLEAN OUTPUT DIRECTORY
 // ----------------------------------------------------------------------------
-function cleanDist() {
+function cleanDist(): void {
   const distDir = path.resolve("build/tailwind");
   try {
     fs.rmSync(distDir, { recursive: true, force: true });
-    console.info(`Removed ${distDir}`);
+    logger.info(`Removed ${distDir}`);
   } catch (err) {
-    console.error(`No existing ${distDir} to remove`, err);
+    logger.error(`No existing ${distDir} to remove`);
   }
 
   fs.mkdirSync(distDir, { recursive: true });
@@ -35,8 +36,8 @@ function cleanDist() {
 StyleDictionary.registerTransform({
   name: "color/spaceRGB",
   type: "value",
-  filter: (token) => token.$type === "color",
-  transform: (token) => {
+  filter: (token: DesignToken) => token.$type === "color",
+  transform: (token: DesignToken) => {
     const { r, g, b } = tinycolor(token.$value).toRgb();
     return `${r} ${g} ${b}`;
   },
@@ -49,14 +50,14 @@ StyleDictionary.registerTransform({
 StyleDictionary.registerTransform({
   name: "name/kebabWithCamel",
   type: "name",
-  transform: (token) => token.path.join("-"),
+  transform: (token: DesignToken) => token.path.join("-"),
 });
 
 /**
  * Converts camelCase to kebab-case
  * e.g. "fontSize" -> "font-size"
  */
-function camelToKebab(str) {
+function toKebabCase(str: string): string {
   return str.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
@@ -65,10 +66,8 @@ function camelToKebab(str) {
  * @param {string|number} value - The dimension value(s) to transform
  * @returns {string} Space-separated list of pixel values
  */
-function formatPixels(value) {
-  return parseSpaceSeparatedValues(value)
-    .map(convertToPixels)
-    .join(" ");
+function formatPixels(value: string | number): string {
+  return parseSpaceSeparatedValues(value).map(convertToPixels).join(" ");
 }
 
 /**
@@ -76,8 +75,8 @@ function formatPixels(value) {
  * @param {string|number} value - The value to convert
  * @returns {string} The value with 'px' suffix if numeric
  */
-function convertToPixels(value) {
-  const num = parseFloat(value);
+function convertToPixels(value: string | number): string {
+  const num = parseFloat(String(value));
   if (isNaN(num)) return String(value);
   if (num === 0) return "0px";
   return `${num}px`;
@@ -88,7 +87,7 @@ function convertToPixels(value) {
  * @param {string|number} value - The value to parse
  * @returns {string[]} Array of individual values
  */
-function parseSpaceSeparatedValues(value) {
+function parseSpaceSeparatedValues(value: string | number): string[] {
   if (typeof value === "string" && value.includes(" ")) {
     return value.split(" ").filter(Boolean);
   }
@@ -99,8 +98,8 @@ function parseSpaceSeparatedValues(value) {
 StyleDictionary.registerTransform({
   name: "dimension/px",
   type: "value",
-  filter: (token) => token.original.$type === "dimension",
-  transform: (token) => {
+  filter: (token: DesignToken) => token.original.$type === "dimension",
+  transform: (token: DesignToken) => {
     const value = token.original.$value;
     if (value === undefined) return undefined;
     return formatPixels(value);
@@ -136,9 +135,6 @@ StyleDictionary.registerTransformGroup({
 
 // 2) FILE HEADERS
 // ----------------------------------------------------------------------------
-/**
- * Generates a warning header for auto-generated files
- */
 StyleDictionary.registerFileHeader({
   name: "doNotEditWarningHeader",
   fileHeader: async () => {
@@ -147,9 +143,6 @@ StyleDictionary.registerFileHeader({
   },
 });
 
-/**
- * Generates a header for editable auto-generated files
- */
 StyleDictionary.registerFileHeader({
   name: "canEditHeader",
   fileHeader: async () => {
@@ -168,9 +161,7 @@ StyleDictionary.registerFileHeader({
  * @param {string} key - The key to validate
  * @returns {boolean} Whether the key is valid
  */
-function isValidJSKey(key) {
-  // Basic check for a valid JS identifier: a-z, A-Z, 0-9, _, $
-  // cannot start with digit
+function isValidJSKey(key: string): boolean {
   return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key);
 }
 
@@ -180,7 +171,7 @@ function isValidJSKey(key) {
  * @param {number} indent - The current indentation level
  * @returns {string} JavaScript literal representation
  */
-function toJSLiteral(value, indent = 2) {
+function toJSLiteral(value: any, indent = 2): string {
   if (typeof value === "string") {
     return `"${value}"`;
   }
@@ -203,7 +194,7 @@ function toJSLiteral(value, indent = 2) {
     result += " ".repeat(indent - 2) + "}";
     return result;
   }
-  return String(value); // catch-all for booleans, numbers, etc.
+  return String(value);
 }
 
 /**
@@ -212,7 +203,11 @@ function toJSLiteral(value, indent = 2) {
  * @param {string[]} pathArray - Array of keys representing the path
  * @param {any} value - The value to set
  */
-function setNestedProperty(obj, pathArray, value) {
+function setNestedProperty(
+  obj: Record<string, any>,
+  pathArray: string[],
+  value: any
+): void {
   let current = obj;
   for (let i = 0; i < pathArray.length; i++) {
     const key = pathArray[i];
@@ -229,13 +224,8 @@ function setNestedProperty(obj, pathArray, value) {
 
 // 4) FORMATTERS
 // ----------------------------------------------------------------------------
-
 /**
- * css/index-file
- * Existing index file for:
- * @import "./base.css";
- * @import "./dark.css";
- * plus @tailwind directives
+ * Generates the main CSS index file with imports and Tailwind directives
  */
 StyleDictionary.registerFormat({
   name: "css/index-file",
@@ -258,9 +248,7 @@ StyleDictionary.registerFormat({
 });
 
 /**
- * tailwind/base
- * -> Outputs a partial config in "tailwind.base.js" that references tokens.
- *    No 'content' array or 'plugins' here. We define darkMode + theme.extend.
+ * Generates the base Tailwind configuration with theme extensions
  */
 StyleDictionary.registerFormat({
   name: "tailwind/base",
@@ -280,47 +268,43 @@ StyleDictionary.registerFormat({
     dictionary.allTokens.forEach((token) => {
       let cssRef;
       if (token?.$type === "color") {
-        // color tokens are stored as numeric triple => use rgb(var(--...))
-        cssRef = `rgb(var(--${camelToKebab(token.name)}))`;
+        cssRef = `rgb(var(--${toKebabCase(token.name)}))`;
       } else {
-        // shadow or anything else => just var(--tokenName)
-        // (the actual value is already a final string from the transform)
-        cssRef = `var(--${camelToKebab(token.name)})`;
+        cssRef = `var(--${toKebabCase(token.name)})`;
       }
 
       // Flatten nested color objects
       const segments = token.name.split("-");
       if (segments[0] === "colors") {
-        // For colors, create flattened keys like "button-primary-bg"
         const flattenedKey = segments.slice(1).join("-");
-        partialConfig.theme.extend.colors[flattenedKey] = cssRef;
+        (partialConfig.theme.extend.colors as Record<string, string>)[
+          flattenedKey
+        ] = cssRef;
       } else {
-        // For non-colors, keep the nested structure
         setNestedProperty(partialConfig.theme.extend, segments, cssRef);
       }
     });
 
     const partialStr = toJSLiteral(partialConfig, 2);
-    const snippet = `/** @type {import('tailwindcss').Config} */
-export default ${partialStr};
-`;
-
-    return header + snippet;
+    return (
+      header +
+      `/** @type {import('tailwindcss').Config} */
+export default ${partialStr};`
+    );
   },
 });
 
 /**
- * tailwind/config
- * -> Outputs "tailwind.config.js" that imports 'tailwind.base.js'
- *    and merges or overrides content, plugins, etc.
+ * Generates the main Tailwind configuration file
  */
 StyleDictionary.registerFormat({
   name: "tailwind/config",
   format: async function ({ file, options, dictionary }) {
     const header = await fileHeader({ file, options });
 
-    // We'll build a snippet that merges the base partial config
-    const snippet = `/** @type {import('tailwindcss').Config} */
+    return (
+      header +
+      `/** @type {import('tailwindcss').Config} */
 
 import base from "./tailwind.base.js";
 
@@ -342,15 +326,14 @@ export default {
       ...(base.theme?.extend || {}),
     }
   }
-};
-`;
-    return header + snippet;
+};`
+    );
   },
 });
 
 // 5) BUILD SCRIPTS
 // ----------------------------------------------------------------------------
-async function main() {
+async function main(): Promise<void> {
   cleanDist();
 
   // Base styles
@@ -458,3 +441,4 @@ main().catch((err) => {
 });
 
 export { main };
+

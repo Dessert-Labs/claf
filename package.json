@@ -8,13 +8,18 @@
   "type": "module",
   "dependencies": {
     "glob": "^11.0.2",
-    "sd-tailwindcss-transformer": "^2.1.0",
     "style-dictionary": "^5.0.0",
     "tinycolor2": "^1.6.0"
   },
   "scripts": {
     "generate": "pnpm generate:tailwind && pnpm generate:figma",
-    "generate:tailwind": "node ./generators/tailwind/tailwindGenerator.js",
-    "generate:figma": "node ./generators/figma/figmaGenerator.js"
+    "generate:tailwind": "tsx ./generators/tailwind/tailwindGenerator.ts",
+    "generate:figma": "tsx ./generators/figma/figmaGenerator.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.27",
+    "@types/tinycolor2": "^1.4.6",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
   }
 }
